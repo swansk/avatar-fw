@@ -14,7 +14,7 @@ DRV8301::DRV8301(SPI *spi, DigitalOut *cs)
 
 uint16_t DRV8301::spi_write(uint16_t val)
 {
-    /// TODO: verify the spi timings for new chip pog
+    /// TODO: verify the spi timings for new chip
     _cs->write(0);
     wait_us(10);
     uint16_t reply = _spi->write(val);
