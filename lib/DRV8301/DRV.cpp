@@ -22,40 +22,61 @@ uint16_t DRV8301::spi_write(uint16_t val)
     return reply;
 }
 
+/**
+ * Read the value of Status Register 1 over SPI.
+ */
 int DRV8301::read_SR1(void)
 {
     uint16_t val = (1 << 15) | SR1;
     return spi_write(val);
 }
 
+/**
+ * Read the value of Status Register 2 over SPI.
+ */
 int DRV8301::read_SR2(void)
 {
     uint16_t val = (1 << 15) | SR2;
     return spi_write(val);
 }
 
+/**
+ * Read the value of register reg over SPI.
+ */
 int DRV8301::read_register(int reg)
 {
     return spi_write((1 << 15) | (reg << 11));
 }
 
+/**
+ * Write the value val to register reg over SPI.
+ */
 void DRV8301::write_register(int reg, int val)
 {
     spi_write((reg << 11) | val);
 }
 
+/**
+ * Write the specified values to Config Register 1 over SPI.
+ */
 void DRV8301::write_CR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT)
 {
     uint16_t val = (CR1 << 11) | (OC_ADJ_SET << 6) | (OCP_MODE << 4) | (PWM_MODE << 3) | (GATE_RESET << 2) | GATE_CURRENT;
     spi_write(val);
 }
 
+/**
+ * Write the specified values to Config Register 2 over SPI.
+ */
 void DRV8301::write_CR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE)
 {
     uint16_t val = (CR2 << 11) | (OC_TOFF << 6) | (DC_CAL_CH2 << 5) | (DC_CAL_CH1 << 4) | (GAIN << 2) | OCTW_MODE;
     spi_write(val);
 }
 
+/**
+ * Read both config registers and print any faults.
+ */
 void DRV8301::print_faults(void)
 {
     uint16_t val1 = read_SR1();
@@ -118,6 +139,7 @@ void DRV8301::print_faults(void)
 }
 
 /// TODO: determine if we ever need to disable/enable gate drive faults or if we can delete this
+//  Investigate more -- theres a pin that needs to be brought low or high to enable this feature, could use GPIO
 // void DRV8301::enable_gd(void)
 // {
 //     uint16_t val = (read_register(DCR)) & (~(0x1 << 2));
@@ -130,6 +152,9 @@ void DRV8301::print_faults(void)
 //     write_register(DCR, val);
 // }
 
+/**
+ * Short input pins and disconnect both current shunt amplifiers from load for external calibration.
+ */
 void DRV8301::calibrate(void)
 {
     uint16_t val = 0x1 << 5 + 0x1 << 4;
