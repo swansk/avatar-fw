@@ -1,15 +1,19 @@
 #include "mbed.h"
 #include "DRV.h"
 
-DRV8301::DRV8301(SPI *spi, DigitalOut *cs)
+DRV8301::DRV8301(SPI *spi, DigitalOut *cs, DigitalOut *en_gate)
 {
     /// TODO: verify the spi mode is the same (probably is)
     _spi = spi;
     _cs = cs;
-    _cs->write(1);
-    wait_us(10);
+    _en_gate = en_gate;
     _spi->format(16, 1);
     _spi->frequency(500000);
+    _cs->write(1);
+    _en_gate->write(0);
+    wait_us(40);
+    _en_gate->write(1);
+    wait_ms(20);
 }
 
 uint16_t DRV8301::spi_write(uint16_t val)
@@ -25,35 +29,47 @@ uint16_t DRV8301::spi_write(uint16_t val)
 int DRV8301::read_SR1(void)
 {
     uint16_t val = (1 << 15) | SR1;
-    return spi_write(val);
+    spi_write(val);
+    wait_us(10);
+    return spi_write(0xFFFF);
 }
 
 int DRV8301::read_SR2(void)
 {
-    uint16_t val = (1 << 15) | SR2;
-    return spi_write(val);
+    uint16_t val = (1 << 15) | SR2 << 11;
+    spi_write(val);
+    wait_us(10);
+    return spi_write(0xFFFF);
 }
 
 int DRV8301::read_register(int reg)
 {
-    return spi_write((1 << 15) | (reg << 11));
+    spi_write((1 << 15) | (reg << 11));
+    wait_us(10);
+    return spi_write(0xFFFF);
 }
 
-void DRV8301::write_register(int reg, int val)
+int DRV8301::write_register(int reg, int val)
 {
     spi_write((reg << 11) | val);
+    wait_us(10);
+    return spi_write(0xFFFF);
 }
 
-void DRV8301::write_CR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT)
+int DRV8301::write_CR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT)
 {
     uint16_t val = (CR1 << 11) | (OC_ADJ_SET << 6) | (OCP_MODE << 4) | (PWM_MODE << 3) | (GATE_RESET << 2) | GATE_CURRENT;
     spi_write(val);
+    wait_us(10);
+    return spi_write(0xFFFF);
 }
 
-void DRV8301::write_CR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE)
+int DRV8301::write_CR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE)
 {
     uint16_t val = (CR2 << 11) | (OC_TOFF << 6) | (DC_CAL_CH2 << 5) | (DC_CAL_CH1 << 4) | (GAIN << 2) | OCTW_MODE;
     spi_write(val);
+    wait_us(10);
+    return spi_write(0xFFFF);
 }
 
 void DRV8301::print_faults(void)
@@ -132,6 +148,6 @@ void DRV8301::print_faults(void)
 
 void DRV8301::calibrate(void)
 {
-    uint16_t val = 0x1 << 5 + 0x1 << 4;
+    uint16_t val = (0x1 << 5) | (0x1 << 4);
     write_register(CR2, val);
 }
