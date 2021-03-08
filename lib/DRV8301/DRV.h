@@ -71,13 +71,13 @@
 class DRV8301
 {
 public:
-    DRV8301(SPI *spi, DigitalOut *cs);
+    DRV8301(SPI *spi, DigitalOut *cs, DigitalOut *en_gate);
     int read_SR1();
     int read_SR2();
     int read_register(int reg);
-    void write_register(int reg, int val);
-    void write_CR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT);
-    void write_CR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE);
+    int write_register(int reg, int val);
+    int write_CR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT);
+    int write_CR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE);
 
     void enable_gd(void);
     void disable_gd(void);
@@ -87,6 +87,7 @@ public:
 private:
     SPI *_spi;
     DigitalOut *_cs;
+    DigitalOut *_en_gate;
     uint16_t spi_write(uint16_t val);
 };
 
