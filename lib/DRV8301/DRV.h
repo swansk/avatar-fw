@@ -2,10 +2,10 @@
 #define DRV_H
 
 /// Registers ///
-#define SR1 0x0 /// Status Register 1
-#define SR2 0x1 /// Status Register 2
-#define CR1 0x2 /// Control Register 1
-#define CR2 0x3 /// Control Register 2
+#define SR1 0x0  /// Status Register 1
+#define SR2 0x1  /// Status Register 2
+#define CTR1 0x2 /// Control Register 1
+#define CTR2 0x3 /// Control Register 2
 
 /// Register maps, ordered from low bits to high bits ///
 /// Control Register 1 (Gate Driver Control) Fields ///
@@ -76,8 +76,8 @@ public:
     int read_SR2();
     int read_register(int reg);
     int write_register(int reg, int val);
-    int write_CR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT);
-    int write_CR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE);
+    int write_CTR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT);
+    int write_CTR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE);
 
     void enable_gd(void);
     void disable_gd(void);

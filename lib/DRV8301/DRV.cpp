@@ -56,17 +56,17 @@ int DRV8301::write_register(int reg, int val)
     return spi_write(0xFFFF);
 }
 
-int DRV8301::write_CR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT)
+int DRV8301::write_CTR1(int OC_ADJ_SET, int OCP_MODE, int PWM_MODE, int GATE_RESET, int GATE_CURRENT)
 {
-    uint16_t val = (CR1 << 11) | (OC_ADJ_SET << 6) | (OCP_MODE << 4) | (PWM_MODE << 3) | (GATE_RESET << 2) | GATE_CURRENT;
+    uint16_t val = (CTR1 << 11) | (OC_ADJ_SET << 6) | (OCP_MODE << 4) | (PWM_MODE << 3) | (GATE_RESET << 2) | GATE_CURRENT;
     spi_write(val);
     wait_us(10);
     return spi_write(0xFFFF);
 }
 
-int DRV8301::write_CR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE)
+int DRV8301::write_CTR2(int OC_TOFF, int DC_CAL_CH2, int DC_CAL_CH1, int GAIN, int OCTW_MODE)
 {
-    uint16_t val = (CR2 << 11) | (OC_TOFF << 6) | (DC_CAL_CH2 << 5) | (DC_CAL_CH1 << 4) | (GAIN << 2) | OCTW_MODE;
+    uint16_t val = (CTR2 << 11) | (OC_TOFF << 6) | (DC_CAL_CH2 << 5) | (DC_CAL_CH1 << 4) | (GAIN << 2) | OCTW_MODE;
     spi_write(val);
     wait_us(10);
     return spi_write(0xFFFF);
@@ -149,5 +149,5 @@ void DRV8301::print_faults(void)
 void DRV8301::calibrate(void)
 {
     uint16_t val = (0x1 << 5) | (0x1 << 4);
-    write_register(CR2, val);
+    write_register(CTR2, val);
 }
