@@ -7,18 +7,21 @@
 #define PIN_W PA_8
 #define PWM_ARR 0x8CA /// timer autoreload value
 
+DigitalOut led1(LED1);
+DigitalOut led2(LED2);
+
+InterruptIn button(BUTTON1);
+PwmOut pwm_u(PIN_U);
+PwmOut pwm_v(PIN_V);
+PwmOut pwm_w(PIN_W);
+
 // typedef struct
 // {
 //   DigitalOut *enable;
 //   DigitalOut *led;
 //   FastPWM *pwm_u, *pwm_v, *pwm_w;
 // } GPIOStruct;
-
-DigitalOut led1(LED1);
-DigitalOut led2(LED2);
 // GPIOStruct gpio;
-InterruptIn button(BUTTON1);
-
 // void Init_PWM(GPIOStruct *gpio)
 // {
 
@@ -49,19 +52,26 @@ InterruptIn button(BUTTON1);
 //   TIM1->CCER |= ~(TIM_CCER_CC1NP); // Interupt when low side is on.
 //   TIM1->CR1 |= TIM_CR1_CEN;        // enable TIM1
 // }
-
+// int factor = 0.00001;
 // extern "C" void TIM1_UP_TIM10_IRQHandler(void)
 // {
-//   TIM1->CCR3 = (PWM_ARR)*0.1f;
-//   TIM1->CCR2 = (PWM_ARR)*0.2f;
-//   TIM1->CCR1 = (PWM_ARR)*0.3f;
+//   if (factor < 0.7)
+//     factor += 0.00001;
+//   else
+//   {
+//     factor = 0;
+//     led2 = !led2;
+//   }
+//   TIM1->CCR3 = (PWM_ARR)*0.1f + factor;
+//   TIM1->CCR2 = (PWM_ARR)*0.2f + factor;
+//   TIM1->CCR1 = (PWM_ARR)*0.3f + factor;
 
 //   TIM1->SR = 0x0; // reset the status register
 // }
 
 int main()
 {
-  //Init_PWM(&gpio);
+  // Init_PWM(&gpio);
 
   // put your setup code here, to run once:
   Serial pc(PA_2, PA_3);
@@ -81,13 +91,61 @@ int main()
   int spen = drv.read_register(CTR1) & 0x7FF;
   int karl = drv.read_register(CTR2) & 0x7FF;
 
+  pwm_u.period(0.000025);
+  pwm_v.period(0.000025);
+  pwm_w.period(0.000025);
+  int state = 0;
+  for (int j = 0; j < 3; j++)
+  {
+    for (int i = 0; i < 200000; i++)
+    {
+      switch (state)
+      {
+      case 0: // u  1  v -1  w  0
+        pwm_u.write(0.1);
+        pwm_w.write(0);
+        state++;
+        break;
+      case 1: // u  1  v  0  w -1
+        pwm_u.write(0.1);
+        pwm_v.write(0);
+        state++;
+        break;
+      case 2: // u  0  v  1  w -1
+        pwm_u.write(0);
+        pwm_v.write(0.1);
+        state++;
+        break;
+      case 3: // u -1  v  1  w  0
+        pwm_v.write(0.1);
+        pwm_w.write(0);
+        state++;
+        break;
+      case 4: // u -1  v  0  w  1
+        pwm_v.write(0);
+        pwm_w.write(0.1);
+        state++;
+        break;
+      case 5: // u  0  v -1  w  1
+        pwm_u.write(0);
+        pwm_w.write(0.1);
+        state = 0;
+        break;
+      }
+      wait_us(10);
+      pwm_u.write(0);
+      pwm_v.write(0);
+      pwm_w.write(0);
+    }
+  }
   while (1)
   {
     led1 = !led1;
-    pc.printf("Pete Says: %d\r\n", pete);
-    pc.printf("Anja Says: %d\r\n", anja);
-    pc.printf("Spencer Says: %d\r\n", spen); // should be 1912
-    pc.printf("Karl Says: %d\r\n\n", karl);  // should be 9 (unless writes change)
-    thread_sleep_for(1000);
+    pc.printf("Fault 1: %d Fault 2: %d\r\n", drv.read_SR1(), drv.read_SR2());
+    pc.printf("Control Register 1 Pre Config: %d\r\n", pete);
+    pc.printf("Control Register 2 Pre Config: %d\r\n", anja);
+    pc.printf("Control Register 1 Post Config: %d\r\n", spen);   // should be 1912
+    pc.printf("Control Register 2 Post Config: %d\r\n\n", karl); // should be 9 (unless writes change)
+    thread_sleep_for(2500);
   }
 }
