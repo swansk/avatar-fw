@@ -31,7 +31,7 @@ uint16_t DRV8301::spi_write(uint16_t val)
  */
 int DRV8301::read_SR1(void)
 {
-    uint16_t val = (1 << 15) | SR1;
+    uint16_t val = (1 << 15) | SR1 << 11;
     spi_write(val);
     wait_us(10);
     return spi_write(0xFFFF);
