@@ -1,5 +1,5 @@
 #include "mbed.h"
-#include "DRV.h"
+#include "DRV8301.h"
 
 DRV8301::DRV8301(SPI *spi, DigitalOut *cs)
 {

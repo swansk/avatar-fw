@@ -1,27 +1,27 @@
-#ifndef STRUCTS_H
-#define STRUCTS_H
+#ifndef RS485KATZMSGS_H
+#define RS485KATZMSGS_H
  
 #include "mbed.h"
-#include "FastPWM.h"
+// #include "FastPWM.h"
  
  
-typedef struct{
-    DigitalOut *enable;
-    DigitalOut *led;
-    FastPWM *pwm_u, *pwm_v, *pwm_w;
-} GPIOStruct;
+// typedef struct {
+//     DigitalOut *enable;
+//     DigitalOut *led;
+//     FastPWM *pwm_u, *pwm_v, *pwm_w;
+// } GPIOStruct;
     
-typedef struct{
+// typedef struct{
     
-}COMStruct;
+// } COMStruct;
     
-typedef struct{
+typedef struct {
     int adc1_raw, adc2_raw, adc3_raw;                       // Raw ADC Values
     float i_a, i_b, i_c;                                    // Phase currents
     float v_bus;                                            // DC link voltage
     float theta_mech, theta_elec;                           // Rotor mechanical and electrical angle
     float dtheta_mech, dtheta_elec, dtheta_elec_filt;       // Rotor mechanical and electrical angular velocit
-    float i_d, i_q, i_q_filt, i_d_filt;                               // D/Q currents
+    float i_d, i_q, i_q_filt, i_d_filt;                     // D/Q currents
     float v_d, v_q;                                         // D/Q voltages
     float dtc_u, dtc_v, dtc_w;                              // Terminal duty cycles
     float v_u, v_v, v_w;                                    // Terminal voltages
@@ -34,7 +34,7 @@ typedef struct{
     int mode;
     int ovp_flag;                                           // Over-voltage flag
     float p_des, v_des, kp, kd, t_ff;                       // Desired position, velocity, gians, torque
-    float v_ref, fw_int;                                     // output voltage magnitude, field-weakening integral
+    float v_ref, fw_int;                                    // output voltage magnitude, field-weakening integral
     float cogging[128];
     int current_sector;
     int otw_flag;                                           // Over-temp warning
@@ -43,7 +43,7 @@ typedef struct{
     int oc_flag;
 } ControllerStruct;
  
-typedef struct{
+typedef struct {
     double temperature;                                              // Estimated temperature
     float temp_measured;
     float q_in, q_out;
@@ -51,6 +51,6 @@ typedef struct{
     float k;
     float trust;
     float delta_t;
-}   ObserverStruct;
+} ObserverStruct;
 
-#endif
+#endif // RS485KATZMSGS_H

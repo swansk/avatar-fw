@@ -132,4 +132,5 @@ public:
       
 
 };
-#endif
+
+#endif  // RS485_H

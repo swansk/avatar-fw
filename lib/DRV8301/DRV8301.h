@@ -90,4 +90,4 @@ private:
     uint16_t spi_write(uint16_t val);
 };
 
-#endif
+#endif // DRV8301_H

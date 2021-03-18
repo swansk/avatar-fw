@@ -1,5 +1,5 @@
-#ifndef POSITIONSENSOR_H
-#define POSITIONSENSOR_H
+#ifndef AS5047P_H
+#define AS5047P_H
 
 #define PI 3.14159
 
@@ -17,36 +17,10 @@ public:
     virtual int GetCPR(void) = 0;
     virtual  void WriteLUT(int new_lut[128]) = 0;
 };
-  
-  
-class PositionSensorEncoder: public PositionSensor {
-public:
-    PositionSensorEncoder(int CPR, float offset, int ppairs);
-    virtual void Sample(float dt);
-    virtual float GetMechPosition();
-    virtual float GetElecPosition();
-    virtual float GetMechVelocity();
-    virtual float GetElecVelocity();
-    virtual void ZeroPosition(void);
-    virtual void SetElecOffset(float offset);
-    virtual int GetRawPosition(void);
-    virtual int GetCPR(void);
-    virtual  void WriteLUT(int new_lut[128]); 
-private:
-    InterruptIn *ZPulse;
-    DigitalIn *ZSense;
-    //DigitalOut *ZTest;
-    virtual void ZeroEncoderCount(void);
-    virtual void ZeroEncoderCountDown(void);
-    int _CPR, flag, rotations, _ppairs, raw, first_sample;
-    //int state;
-    float _offset, MechPosition, MechOffset, dir, test_pos, oldVel, out_old, velVec[40];
-    int offset_lut[128];
-};
  
-class AS5047: public PositionSensor{
+class AS5047P: public PositionSensor{
 public:
-    AS5047(int CPR, float offset, int ppairs);
+    AS5047P(int CPR, float offset, int ppairs);
     virtual void Sample(float dt);
     virtual float GetMechPosition();
     virtual float GetMechPositionFixed();
@@ -70,4 +44,4 @@ private:
  
 };
  
-#endif
+#endif // AS5047P_H
