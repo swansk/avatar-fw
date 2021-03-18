@@ -1,5 +1,4 @@
-#include "mbed.h"
-#include "DRV.h"
+#include "DRV8301.h"
 
 DRV8301::DRV8301(SPI *spi, DigitalOut *cs, DigitalOut *en_gate)
 {
@@ -61,7 +60,7 @@ int DRV8301::read_register(int reg)
 /**
  * Write the value val to register reg over SPI.
  */
-void DRV8301::write_register(int reg, int val)
+int DRV8301::write_register(int reg, int val)
 {
     spi_write((reg << 11) | val);
     wait_us(10);

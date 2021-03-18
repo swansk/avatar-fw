@@ -1,5 +1,7 @@
-#ifndef DRV_H
-#define DRV_H
+#ifndef DRV8301_H
+#define DRV8301_H
+
+#include "mbed.h"
 
 /// Registers ///
 #define SR1 0x0  /// Status Register 1
