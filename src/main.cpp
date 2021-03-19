@@ -10,10 +10,8 @@
 
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
-// GPIOStruct gpio;
 InterruptIn button(BUTTON1);
 
-InterruptIn button(BUTTON1);
 PwmOut pwm_u(PIN_U);
 PwmOut pwm_v(PIN_V);
 PwmOut pwm_w(PIN_W);
