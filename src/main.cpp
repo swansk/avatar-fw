@@ -13,7 +13,11 @@
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 
-int main() {
+int main()
+{
+  // TODO: dependency injection for all of the objects (drv, encoder) with the spi/cs objects (pass by reference, not pointer)
+  // also, remove new spi object creation in constructor of encoder object so they (enc/drv) share reference to one spi object, CS will make sure nothing bad happens
+  // also, add the correct pins for spi (PB_15/14/13, PB_12 encoder chip select, PA_6 for drv chip select)
   Serial pc = Serial(PA_9, PA_10);
 
   SPI spi = SPI(NC, NC, NC);
@@ -30,5 +34,4 @@ int main() {
   RS485KatzComm katzComm = RS485KatzComm(rs485, duplexSel, &controller);
 
   katzComm.listen_begin();
-
 }
