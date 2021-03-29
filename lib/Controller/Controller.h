@@ -9,6 +9,7 @@
 class Controller {
     public:
         Controller(AS5047P &positionSensor, DRV8301 &motorDriver): _positionSensor(positionSensor), _motorDriver(motorDriver) {}
+        // Controller(AS5047P &positionSensor): _positionSensor(positionSensor) {}
 
         /**
          * Update the controller with new PD and torque values.
@@ -20,6 +21,15 @@ class Controller {
          * @param t_ff feed forward torque, between -18 and 18 N-m.
          */
         void update(float p, float v, float kp, float kd, float t_ff);
+
+        /**
+         * Read the status of the controller.
+         * 
+         * @returns array containing: 16 bit position, between -4*pi and 4*pi
+         *                            12 bit velocity, between -30 and + 30 rad/s
+         *                            12 bit current, between -40 and 40;
+         */
+        float * read_status();
 
     private:
         AS5047P &_positionSensor;

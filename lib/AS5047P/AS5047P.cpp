@@ -1,18 +1,14 @@
 #include "mbed.h"
 #include "AS5047P.h"
  
-AS5047P::AS5047P(int CPR, float offset, int ppairs) {
+AS5047P::AS5047P(int CPR, float offset, int ppairs, SPI &spi, DigitalOut &cs) : _spi(spi), _cs(cs) {
     //_CPR = CPR;
     _CPR = CPR;
     _ppairs = ppairs;
     ElecOffset = offset;
     rotations = 0;
-    spi = new SPI(PA_7, PA_6, PA_5);
-    spi->format(16, 1);                                                          // mbed v>127 breaks 16-bit spi, so transaction is broken into 2 8-bit words
-    spi->frequency(1000000);
     
-    cs = new DigitalOut(PA_4);
-    cs->write(1);
+    _cs.write(1);
     readAngleCmd = 0xffff;   
     MechOffset = offset;
     modPosition = 0;
@@ -22,23 +18,18 @@ AS5047P::AS5047P(int CPR, float offset, int ppairs) {
     first_sample = 0;
     for (int i = 0; i < 100; i++)              // Initial measurement is really noisy
     {
-        spi->write(0);
+        _spi.write(0);
         wait_us(100);
     }
 }
     
 void AS5047P::Sample(float dt){
     GPIOA->ODR &= ~(1 << 15);
-    //raw = spi->write(readAngleCmd);
-    //raw &= 0x3FFF;
-    cs->write(0);   
-    raw = spi->write(0);
-    err = 1 << 14 & raw;
-    raw = raw >> 2;      //Extract last 14 bits
-    if (raw > 8192) {
-        raw = raw - 8192;
-    }
-    raw = raw - 4096;
+    _cs.write(0);   
+    raw = _spi.write(readAngleCmd);
+    raw &= 0x3FFF;
+    // err = 1 << 14 & raw;
+    // raw = raw >> 2;      //Extract last 14 bits
     GPIOA->ODR |= (1 << 15);
     int off_1 = offset_lut[raw >> 7];
     int off_2 = offset_lut[((raw >> 7) + 1) % 128];
@@ -87,7 +78,7 @@ void AS5047P::Sample(float dt){
     MechVelocity =  sum/((float)n);
     ElecVelocity = MechVelocity*_ppairs;
     ElecVelocityFilt = 0.99f*ElecVelocityFilt + 0.01f*ElecVelocity;
-    cs->write(1);  
+    _cs.write(1);  
 }
  
 int AS5047P::GetRawPosition(){

@@ -12,6 +12,10 @@
 
 // #include "user_config.h"
 
+enum DUPLEX_MODE {
+    RECEIVE = 0,
+    SEND = 1
+};
 
 class RS485KatzComm {
     public:
@@ -19,10 +23,11 @@ class RS485KatzComm {
          * Construct a RS485KatzComm instance, inject RS485 interface.
          * 
          * @param rs485 Instance of rs485 interface.
-         * @param duplexSel Instance of pin connected to !RE and DE MAX485 pin.
+         * @param de Instance of pin connected to DE MAX485 pin.
+         * @param nre Instance of pin connected to !RE MAX485 pin.
          * @param controller Pointer to controller observer.
          */
-        RS485KatzComm(RS485 &rs485, DigitalOut &duplexSel, Controller *controller): _rs485(rs485), _duplexSel(duplexSel) {
+        RS485KatzComm(RS485 &rs485, DigitalOut &de, DigitalOut &nre, Controller *controller): _rs485(rs485), _de(de), _nre(nre) {
             _controller = controller;
         }
 
@@ -44,7 +49,14 @@ class RS485KatzComm {
          * @param v  12 bit velocity, between -30 and + 30 rad/s.
          * @param a  12 bit current, between -40 and 40.
          */
-        void send_status_msg(uint8_t id, float p, float v, float a);
+        void send_status_msg(uint8_t id, uint16_t p, uint16_t v, uint16_t a);
+
+        /**
+         * Set duplex mode.
+         * 
+         * @param mode enum representing duplex mode
+         */
+        void set_duplex_mode(enum DUPLEX_MODE mode);
 
     private:
         /**
@@ -53,7 +65,8 @@ class RS485KatzComm {
         void monitor_update_observers();
 
         RS485 &_rs485;
-        DigitalOut &_duplexSel;
+        DigitalOut &_de;
+        DigitalOut &_nre;
         Thread _thread;
         Controller *_controller = nullptr;
 

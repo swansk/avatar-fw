@@ -20,7 +20,7 @@ public:
  
 class AS5047P: public PositionSensor{
 public:
-    AS5047P(int CPR, float offset, int ppairs);
+    AS5047P(int CPR, float offset, int ppairs, SPI &spi, DigitalOut &cs);
     virtual void Sample(float dt);
     virtual float GetMechPosition();
     virtual float GetMechPositionFixed();
@@ -37,8 +37,8 @@ public:
 private:
     float position, ElecPosition, ElecOffset, MechPosition, MechOffset, modPosition, oldModPosition, oldVel, velVec[40], MechVelocity, ElecVelocity, ElecVelocityFilt;
     int raw, _CPR, rotations, old_counts, _ppairs, first_sample, err;
-    SPI *spi;
-    DigitalOut *cs;
+    SPI &_spi;
+    DigitalOut &_cs;
     int readAngleCmd;
     int offset_lut[128];
  
